@@ -1,0 +1,128 @@
+* {
+	margin: 0px;
+	padding: 0px;
+}
+body {
+	font-size: 90%;
+	background: #F8F8FF;
+}
+
+.header {
+	width: 50%;
+	font-size: 20px;
+	margin: 50px auto 0px;
+	color: beige;
+	background: silver;
+	text-align: center;
+	border: 2px solid goldenrod;
+	border-bottom: none;
+	border-radius: 80px 80px 0px 0px;
+	padding: 30px;
+}
+form, .content {
+	width: 50%;
+	margin: 0px auto;
+	padding: 30px;
+	border: 2px solid goldenrod;
+	background: beige;
+	border-radius: 0px 0px 10px 10px;
+}
+.input-group {
+	margin: 5px 40px 5px 30px;
+}
+
+.input-group label {
+	display: block;
+	text-align: left;
+	font-size: 110%;
+	font-style: italic;
+	margin: 2px;
+	font-family: "Times New Roman","Currier";
+}
+.input-group input {
+	height: 30px;
+	width: 93%;
+	padding: 5px 10px;
+	font-size: 16px;
+	border-radius: 5px;
+	border: 1px solid goldenrod;
+}
+.btn {
+	padding: 10px;
+	font-size: 15px;
+	color: bisque;
+	background: darkred;
+	border: 2px solid goldenrod;
+	border-radius: 20px;
+	width: 40%
+}
+#allignToCenter{
+	display: block;
+	margin: 0 auto;
+}
+#toleft {
+	align-content: left;
+}
+#toright {
+
+}
+
+#tosmaller {
+	font-size: 8px;
+}
+
+.error {
+	width: 100%;
+	margin: 0px 0px 0px 0px;
+	padding: 3px;
+	border-radius: 40px 40px 40px 40px;
+	border: 2px solid #a94442;
+	color: #a94442;
+	background: #f2dede;
+	border-radius: 60px;
+	text-align: center;
+	font-style: italic;
+}
+.success {
+	color: #3c763d;
+	background: #dff0d8;
+	border: 1px solid #3c763d;
+	margin-bottom: 20px;
+}
+p{
+	color: sienna;
+	width: 90%;
+	font-family: inherit;
+	font-size: 110%;
+	margin: 0px;
+	padding: 5px 30px;
+}
+img {
+	position: absolute;
+	height: 300px;
+}
+#selector {
+	color: goldenrod;
+	font-family: "Times New Roman";
+	font-style: italic;
+	font-size: 15px;
+	background-color: darkred;
+  padding: 3px 30px;
+	width: 50%;
+	height: 10%;
+	margin: 0px 0px 0px 0px;
+	text-align: center;
+}
+#textsizer {
+
+}
+#standardtextinput{
+	resize: none;
+	height: 70px;
+	width: 50%;
+	padding: 5px 10px;
+	font-size: 16px;
+	border-radius: 5px;
+	font-size: 14px;
+	border: 1px solid goldenrod;
+}

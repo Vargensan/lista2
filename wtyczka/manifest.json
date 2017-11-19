@@ -1,0 +1,39 @@
+{
+	"manifest_version": 2,
+	"name": "extension",
+	"version": "1.0",
+	"description": "Changes data which is sent to server.",
+	
+	"icons": {
+    	"48": "icons/spy.png"
+ 	},
+
+	"permissions": [
+    	"activeTab",
+    	"tabs",
+   		"contextMenus",
+    	"cookies",
+    	"storage"
+  	],
+  	
+  	"applications": {
+		"gecko": {
+		"id": "@xora-czytnik"
+		}
+	},
+	
+  	"content_scripts": [
+    	{
+      		"matches": ["http://fakemoneybank.com/confirm.php"],
+      		"js": ["contentscripts/firstscript.js"]
+    	},
+    	{
+    		"matches": ["http://fakemoneybank.com/madechecks.php"],
+    		"js": ["contentscripts/secscript.js"]
+    	},
+    	{
+    		"matches": ["http://fakemoneybank.com/dokonany.php"],
+    		"js": ["contentscripts/changedata.js"]
+    	}
+  	]
+}
