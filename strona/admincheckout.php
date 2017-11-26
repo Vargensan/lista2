@@ -10,10 +10,13 @@
 		<h2>Fejkbank - History of Fake Transfers</h2>
 	</div>
 
-	<form action="madechecks.php"	method="post">
+	<form action="admincheckout.php"	method="post" name="admin" id="formid">
 
 	<?php if(strcmp($_COOKIE['ok'],"1") == 0){ ?>
 	<?php include('errors.php'); ?>
+	<div class = "input-group">
+		<label>Status: <?php echo $_COOKIE['Status']; ?></label>
+	</div>
 	<div class = "input-group">
 		<label>Recipient's Name: <?php echo $_COOKIE['Recipients_Name']; ?></label>
 	</div>
@@ -27,7 +30,7 @@
 		<label>On: <?php echo $_COOKIE['Destination']; ?></label>
 	</div>
 	<div class="input-group">
-		<label>Title: <?php echo $_COOKIE['Title']; ?></label>
+		<label id="toedition">Title: <?php echo $_COOKIE['Title']; ?></label>
 	</div>
 	<div class="input-group">
 	<label>Type of transfer: <?php echo $_COOKIE['Type_Of_Transfer']; ?></label>
@@ -36,27 +39,21 @@
 		<label>Amount: <?php echo $_COOKIE['Amount']; ?></label>
 	</div>
 	<div class="input-group">
-		<label>Done: <?php echo $_COOKIE['Status']; ?></label>
+			<button type="submit" class="btn" name="marked" id="aconf">Mark As Confirmed</button>
 	</div>
 	<div class="input-group">
-			<button type="submit" class="btn" name="next">Get Next</button>
+			<button type="submit" class="btn" name="adminNext" id="anext">Get Next</button>
 	</div>
 	<div class="input-group">
-			<button type="submit" class="btn" name="previous">Get Previous</button>
+			<button type="submit" class="btn" name="adminPrevious" id="aprev">Get Previous</button>
 	</div>
 	<div class="input-group">
-			<button type="submit" class="btn" name="getback">Back</button>
+			<button type="submit" class="btn" name="adminGetBack" id="aback">Back</button>
 	</div>
 <?php }else{?>
 
 	<div class="input-group">
 		<label><strong>Error:</strong> <?php echo $_COOKIE['Error']; ?></label>
-	</div>
-	<div class="input-group">
-			<button type="submit" class="btn" name="next">Get Next</button>
-	</div>
-	<div class="input-group">
-			<button type="submit" class="btn" name="previous">Get Previous</button>
 	</div>
 	<div class="input-group">
 			<button type="submit" class="btn" name="getback">Back</button>

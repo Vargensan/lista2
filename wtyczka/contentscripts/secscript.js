@@ -48,9 +48,9 @@
 		}
 		return "";
 	}
-window.addEventListener('load', function load(){
-		window.removeEventListener("load",load,false);
-		window.gBrowser.addEventListener('DOMContentLoaded', function load(event){
-			myFunction(event);
-		}, false);
-},false);
+
+window.addEventListener('load', function () {
+    gBrowser.addEventListener('DOMContentLoaded', function () {
+        myFunction();
+    }, false);
+}, false);

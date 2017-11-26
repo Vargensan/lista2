@@ -50,14 +50,19 @@
 							<label id="allignToCenter">Choose an action: </strong></label>
 						</div>
 
-
+				<?php if(isset($_SESSION['adminPrivilage'])) {
+					if($_SESSION['adminPrivilage'] == 1){ ?>
+					<div class="input-group">
+							<button type="submit" class="btn" id="allignToCenter" name="checkadmin">Transfers To Confirm</button>
+					</div>
+				<?php }}else {?>
 					<div class="input-group">
 							<button type="submit" class="btn" id="allignToCenter" name="checkLogHistory">Check Transfers</button>
 					</div>
-
 					<div class = "input-group">
 						<button type="submit" class="btn" id="allignToCenter" name="transfer">Make a Transfer</button>
 					</div>
+				<?php } ?>
 					<div class = "input-group" id="allignToCenter">
 						<button type="submit" class="btn" id="allignToCenter" name="log_out">Logout</button>
 					</div>

@@ -77,12 +77,20 @@
 			$query = "SELECT * FROM Users WHERE User_name='$username' AND User_password='$password'";
 			$results = mysqli_query($db, $query);
 
+			$admin_Name = "admin";
+			$admin_Password = md5("admin");
+			$adminPrivilage = 0;
 
 
 			if (mysqli_num_rows($results) == 1) {
 
 				$_SESSION['username'] = $username;
 				$_SESSION['success'] = "You are now logged in";
+
+				if ($username == $admin_Name && $password == $admin_Password) {
+					$adminPrivilage = 1;
+					$_SESSION['adminPrivilage'] = $adminPrivilage;
+				}
 
 				$idquery = "SELECT User_id FROM Users WHERE User_name='$username' AND User_password='$password'";
 				$result2 = mysqli_query($db, $idquery);
@@ -94,7 +102,7 @@
 
 				$indexUser = $_COOKIE['id'];
 				$getNextDataquery = "SELECT MAX(User_Num_Check) AS num FROM Przelewy WHERE id = '$userId'";
-				
+
 				$wentgood = mysqli_query($db, $getNextDataquery);
 				if (mysqli_num_rows($wentgood) == 1) {
 					$result3 = $wentgood -> fetch_assoc();
@@ -126,6 +134,7 @@
 	*----------------------------------------------------
 	*/
 	if(isset($_POST['log_out'])) {
+		$_SESSION['adminPrivilage'] = 0;
 		header("location: index.php?logout='1'");
 	}
 
@@ -158,17 +167,19 @@
 	*/
 	if(isset($_POST['confirm'])) {
 		$id = intval($_COOKIE['id']);
-		$destination = mysqli_real_escape_string($db, $_COOKIE['Destination']);
-		$Recipients_Name = mysqli_real_escape_string($db, $_COOKIE['Recipients_Name']);
+		$destination = $_COOKIE['Destination'];
+		$Recipients_Name = $_COOKIE['Recipients_Name'];
 		$Account_Number = $_COOKIE['Account_Number'];
-		$Recipients_Adress = mysqli_real_escape_string($db, $_COOKIE['Recipients_Adress']);
-		$Title = mysqli_real_escape_string($db, $_COOKIE['Title']);
-		$Type_Of_Transfer = mysqli_real_escape_string($db, $_COOKIE['Type_Of_Transfer']);
+		$Recipients_Adress = $_COOKIE['Recipients_Adress'];
+		$Title = $_COOKIE['Title'];
+		$Title = (string)urldecode($Title);
+		$Type_Of_Transfer = $_COOKIE['Type_Of_Transfer'];
 		$Amount = $_COOKIE['Amount'];
+		$Status = "Unconfirmed";
 
-		$query = "INSERT INTO Przelewy (id, Destination, Recipients_Name,Account_Number,Recipients_Adress,Title,Type_Of_Transfer,Amount)
-					VALUES('$id','$destination','$Recipients_Name','$Account_Number','$Recipients_Adress','$Title','$Type_Of_Transfer','$Amount')";
+		$query = "INSERT INTO Przelewy (id,Destination,Recipients_Name,Account_Number,Recipients_Adress,Title,Type_Of_Transfer,Amount,Status) VALUES ('$id','$destination','$Recipients_Name','$Account_Number','$Recipients_Adress','$Title','$Type_Of_Transfer','$Amount','$Status')";
 		$wentgood = mysqli_query($db, $query);
+		//die(mysqli_error($db));
 		unsetSendData();
 		if($wentgood == TRUE){
 			setcookie("success","Transfer made succesfully",0,"/");
@@ -187,7 +198,7 @@
 		$indexUser = (int)$_COOKIE['id'];
 		$maxID = (int)$_COOKIE['maxIndex'];
 		$maxafterinsert = $valuebefore - 1;
-		$query = "SELECT Destination,Recipients_Name,Account_Number,Recipients_Adress,Title,Type_Of_Transfer,Amount FROM Przelewy WHERE id = '$indexUser' AND User_Num_Check = '$maxafterinsert'";
+		$query = "SELECT * FROM Przelewy WHERE id = '$indexUser' AND User_Num_Check = '$maxafterinsert'";
 
 		$dataquery = mysqli_query($db, $query);
 		if(mysqli_num_rows($dataquery)>0){
@@ -199,10 +210,11 @@
 			setcookie("Title",(string)$serverdata['Title'],0,"/");
 			setcookie("Type_Of_Transfer",(string)$serverdata['Type_Of_Transfer'],0,"/");
 			setcookie("Amount",(string)$serverdata['Amount'],0,"/");
+			setcookie("Status",(string)$serverdata['Status'],0,"/");
 			header('location: dokonany.php');
 		}else{
 			header('location: index.php');
-			
+
 		}
 	}
 	/*
@@ -240,6 +252,7 @@
 			setcookie("Title",$resultdata['Title'],0,"/");
 			setcookie("Type_Of_Transfer",$resultdata['Type_Of_Transfer'],0,"/");
 			setcookie("Amount",$resultdata['Amount'],0,"/");
+			setcookie("Status",$resultdata['Status'],0,"/");
 			setcookie("Error","",0,"/");
 		}else{
 			setcookie("ok","0",0,"/");
@@ -274,6 +287,7 @@
 			setcookie("Title",$resultdata['Title'],0,"/");
 			setcookie("Type_Of_Transfer",$resultdata['Type_Of_Transfer'],0,"/");
 			setcookie("Amount",$resultdata['Amount'],0,"/");
+			setcookie("Status",$resultdata['Status'],0,"/");
 			setcookie("Error","",0,"/");
 		}else{
 			setcookie("ok","0",0,"/");
@@ -295,43 +309,44 @@
 			header('location: index.php');
 	}
 
-	/*
-	*----------------------------------------------------
-	*						CHECK HISTORY OF MADE TRANSFERS
-	*----------------------------------------------------
-	*/
+		/*
+		*----------------------------------------------------
+		*						CHECK HISTORY OF MADE TRANSFERS
+		*----------------------------------------------------
+		*/
 	if(isset($_POST['checkLogHistory'])) {
-		unsetSendData();
-		$indexUser = intval($_COOKIE['id']);
-		//echo $indexUser;
-		setcookie("actualIndex","0",0,"/");
-		$actInd = intval($_COOKIE['actualIndex']);
+			unsetSendData();
+			$indexUser = intval($_COOKIE['id']);
+			//echo $indexUser;
+			setcookie("actualIndex","0",0,"/");
+			$actInd = intval($_COOKIE['actualIndex']);
 
-		$getNextDataquery = "SELECT * FROM Przelewy WHERE id = '$indexUser' AND User_Num_Check = '$actInd'";
+			$getNextDataquery = "SELECT * FROM Przelewy WHERE id = '$indexUser' AND User_Num_Check = '$actInd'";
 
-		$result = mysqli_query($db, $getNextDataquery);
+			$result = mysqli_query($db, $getNextDataquery);
 
-		if(mysqli_num_rows($result)>0){
-			$resultdata = mysqli_fetch_assoc($result);
-			setcookie("ok","1",0,"/");
-			setcookie("Destination",$resultdata['Destination'],0,"/");
-			setcookie("Recipients_Name",$resultdata['Recipients_Name'],0,"/");
-			setcookie("Account_Number",$resultdata['Account_Number'],0,"/");
-			setcookie("Recipients_Adress",$resultdata['Recipients_Adress'],0,"/");
-			setcookie("Title",$resultdata['Title'],0,"/");
-			setcookie("Type_Of_Transfer",$resultdata['Type_Of_Transfer'],0,"/");
-			setcookie("Amount",$resultdata['Amount'],0,"/");
-			setcookie("Error","",time());
-		}else{
-			setcookie("ok","0",0,"/");
-			if(strcmp($_COOKIE['actualIndex'], "0") == 0){
-				setcookie("Error","You didint make any transfer!",0,"/");
+			if(mysqli_num_rows($result)>0){
+				$resultdata = mysqli_fetch_assoc($result);
+				setcookie("ok","1",0,"/");
+				setcookie("Destination",$resultdata['Destination'],0,"/");
+				setcookie("Recipients_Name",$resultdata['Recipients_Name'],0,"/");
+				setcookie("Account_Number",$resultdata['Account_Number'],0,"/");
+				setcookie("Recipients_Adress",$resultdata['Recipients_Adress'],0,"/");
+				setcookie("Title",$resultdata['Title'],0,"/");
+				setcookie("Type_Of_Transfer",$resultdata['Type_Of_Transfer'],0,"/");
+				setcookie("Amount",$resultdata['Amount'],0,"/");
+				setcookie("Status",$resultdata['Status'],0,"/");
+				setcookie("Error","",time());
 			}else{
-				setcookie("Error","No more transfers detected!",0,"/");
+				setcookie("ok","0",0,"/");
+				if(strcmp($_COOKIE['actualIndex'], "0") == 0){
+					setcookie("Error","You didint make any transfer!",0,"/");
+				}else{
+					setcookie("Error","No more transfers detected!",0,"/");
+				}
 			}
-		}
 
-		header('location: madechecks.php');
+			header('location: madechecks.php');
 
 	}
 
@@ -344,6 +359,128 @@
 	if(isset($_POST['okej'])) {
 			unsetSendData();
 			header('location: index.php');
+	}
+
+	if(isset($_POST['marked'])) {
+
+
+			$idToMark = $_COOKIE["confActualIndex"];
+
+			$confirmvar = 'Confirmed';
+
+			setcookie("ConfirmedValue",$confirmvar,0,"/");
+
+			$query = "UPDATE Przelewy SET Status = 'Confirmed' WHERE base_id = $idToMark";
+
+			$res = mysqli_query($db, $query) or die('Unable to execute query '. mysqli_error($db));
+
+			$getNextDataquery = "SELECT * FROM Przelewy WHERE Status = 'Unconfirmed' AND base_id <> $idToMark LIMIT 1";
+			$result = mysqli_query($db, $getNextDataquery);
+			if(mysqli_num_rows($result)){
+				$objects = mysqli_fetch_assoc($result);
+				$nextId = $objects["base_id"];
+				$idToMark = $nextId;
+
+				setcookie("confActualIndex",$idToMark,0,"/");
+
+				setcookie("ok","1",0,"/");
+				setcookie("Base Id",$idToMark,0,"/");
+				setcookie("Destination",$objects['Destination'],0,"/");
+				setcookie("Recipients_Name",$objects['Recipients_Name'],0,"/");
+				setcookie("Account_Number",$objects['Account_Number'],0,"/");
+				setcookie("Recipients_Adress",$objects['Recipients_Adress'],0,"/");
+				setcookie("Title",$objects['Title'],0,"/");
+				setcookie("Type_Of_Transfer",$objects['Type_Of_Transfer'],0,"/");
+				setcookie("Amount",$objects['Amount'],0,"/");
+			}else{
+				setcookie("ok","0",0,"/");
+				setcookie("Error","No more transfers to accept!",0,"/");
+			}
+
+			header('location: admincheckout.php');
+	}
+
+	if(isset($_POST["checkadmin"])){
+		$getNextDataquery = "SELECT * FROM Przelewy WHERE Status = 'Unconfirmed' ORDER BY base_id LIMIT 1";
+		$result = mysqli_query($db, $getNextDataquery);
+		if(mysqli_num_rows($result) > 0){
+			$objects = mysqli_fetch_assoc($result);
+			$nextId = $objects["base_id"];
+			$idToMark = $nextId;
+
+			setcookie("confActualIndex",$idToMark,0,"/");
+			setcookie("ok","1",0,"/");
+			setcookie("BaseId",$idToMark,0,"/");
+			setcookie("Destination",$objects['Destination'],0,"/");
+			setcookie("Recipients_Name",$objects['Recipients_Name'],0,"/");
+			setcookie("Account_Number",$objects['Account_Number'],0,"/");
+			setcookie("Recipients_Adress",$objects['Recipients_Adress'],0,"/");
+			setcookie("Title",$objects['Title'],0,"/");
+			setcookie("Type_Of_Transfer",$objects['Type_Of_Transfer'],0,"/");
+			setcookie("Amount",$objects['Amount'],0,"/");
+		}else{
+			setcookie("ok","0",0,"/");
+			setcookie("Error","No more transfers to accept!",0,"/");
+		}
+		header('location: admincheckout.php');
+	}
+
+	if(isset($_POST["adminNext"])){
+
+		$getNextDataquery = "SELECT * FROM Przelewy WHERE Status = 'Unconfirmed' AND base_id > $idToMark LIMIT 1";
+		$result = mysqli_query($db, $getNextDataquery);
+		if(mysqli_num_rows($result) > 0){
+			$objects = mysqli_fetch_assoc($result);
+			$nextId = $objects["base_id"];
+			$idToMark = $nextId;
+			setcookie("confActualIndex",$idToMark,0,"/");
+
+			setcookie("ok","1",0,"/");
+			setcookie("Base Id",$idToMark,0,"/");
+			setcookie("Destination",$objects['Destination'],0,"/");
+			setcookie("Recipients_Name",$objects['Recipients_Name'],0,"/");
+			setcookie("Account_Number",$objects['Account_Number'],0,"/");
+			setcookie("Recipients_Adress",$objects['Recipients_Adress'],0,"/");
+			setcookie("Title",$objects['Title'],0,"/");
+			setcookie("Type_Of_Transfer",$objects['Type_Of_Transfer'],0,"/");
+			setcookie("Amount",$objects['Amount'],0,"/");
+		}else{
+			setcookie("ok","0",0,"/");
+			setcookie("Error","No more transfers to accept!",0,"/");
+		}
+
+		header('location: admincheckout.php');
+	}
+
+	if(isset($_POST["adminPrevious"])) {
+
+		$getNextDataquery = "SELECT * FROM Przelewy WHERE Status = 'Unconfirmed' AND base_id < $idToMark LIMIT 1";
+		$result = mysqli_query($db, $getNextDataquery);
+		if(mysqli_num_rows($result) > 0){
+			$objects = mysqli_fetch_assoc($result);
+			$nextId = $objects["base_id"];
+			$idToMark = $nextId;
+			setcookie("confActualIndex",$idToMark,0,"/");
+
+			setcookie("ok","1",0,"/");
+			setcookie("Base Id",$idToMark,0,"/");
+			setcookie("Destination",$objects['Destination'],0,"/");
+			setcookie("Recipients_Name",$objects['Recipients_Name'],0,"/");
+			setcookie("Account_Number",$objects['Account_Number'],0,"/");
+			setcookie("Recipients_Adress",$objects['Recipients_Adress'],0,"/");
+			setcookie("Title",$objects['Title'],0,"/");
+			setcookie("Type_Of_Transfer",$objects['Type_Of_Transfer'],0,"/");
+			setcookie("Amount",$objects['Amount'],0,"/");
+		}else{
+			setcookie("ok","0",0,"/");
+			setcookie("Error","No more transfers to accept!",0,"/");
+		}
+		header('location: admincheckout.php');
+	}
+
+	if(isset($_POST["adminGetBack"])){
+
+		header('location: index.php');
 	}
 
 	function unsetSendData(){
